@@ -1,0 +1,222 @@
+#!/bin/bash
+
+user=`whoami`
+
+if [ "$user" = "root" ]
+
+then
+
+	echo " You are a root user, Now we will install wordpress"
+
+else
+
+	sudo -i
+
+if
+
+# we need to check LEMP 
+
+/etc/init.d/nginx start
+
+if [ $? -eq 0 ]
+
+then
+
+	echo " nginx is running "
+
+else
+
+	apt-get update && apt-get install nginx
+
+fi
+
+# While installtion of mysql use redhat@123 as mysql_root password
+/etc/init.d/mysqld start
+
+if [ $? -eq 0 ]
+
+then
+
+	echo " service mysql is running"
+
+else
+
+	apt-get install mysql-server && mysql_install_db && mysql_secure_installation
+
+fi
+
+/etc/init.d/php-fpm start
+
+if [ $? -eq 0 ]
+
+then
+
+	echo " service php is running "
+
+else 
+
+	apt-get install php-fpm php5-mysql
+
+fi
+
+#  Enter Domain Name
+
+echo " Enter Domain Name "
+
+read domain_name
+
+echo " Enter IP address"
+
+read ip_address
+
+# IP to Doamin name Pointing
+
+echo "$domain_name $ip_address" >> /etc/hosts
+
+# Mysql Database Creation
+
+mysql -u root -p -e "CREATE DATABASE example_db";
+#mysql -u root -p -e "CREATE USER 'sameer' IDENTIFIED BY 'redhat@123";
+#mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO 'sameer'";
+
+# Downloading WordPress
+
+wget  http://wordpress.org/latest.zip > /root/
+
+unzip /root/wordpress-4.3.1.zip
+
+mkdir -p /var/www/wordpress
+
+cp -rv /root/wordpress/* /var/www/wordpress/
+
+# Changing Permission and ownership
+
+chmod -R 755 /var/www/wordpress
+
+cd /var/www/
+
+chown nginx:nginx * -R
+
+usermod -a -G nginx root
+
+cd
+
+# wordpress setup
+
+cp -rv /var/www/wordpress/wp-config-sample.php /var/www/wordpress/wp-config.php
+
+sed -i 's/database_name_here/example_db/g' wp-config.php 
+sed -i 's/username_here/root/g' wp-config.php
+sed -i 's/password_here/redhat@123/g' wp-config.php
+
+# nginx confiuration file
+
+mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default_backup.conf
+cat > /etc/nginx/conf/default.conf << EOF
+
+# The default server
+
+#
+
+server {
+
+    listen       80;
+
+    server_name  $ip_address;
+
+
+
+    #charset koi8-r;
+
+
+
+    #access_log  logs/host.access.log  main;
+
+
+
+    location / {
+
+        root   /var/www/wordpress;
+
+        index index.php  index.html index.htm;
+
+    }
+
+
+
+    error_page  404              /404.html;
+
+    location = /404.html {
+
+        root   /usr/share/nginx/html;
+
+    }
+
+
+
+    # redirect server error pages to the static page /50x.html
+
+    #
+
+    error_page   500 502 503 504  /50x.html;
+
+    location = /50x.html {
+
+        root   /usr/share/nginx/html;
+
+    }
+
+
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+
+    #
+
+    #location ~ \.php$ {
+
+    #    proxy_pass   http://127.0.0.1;
+
+    #}
+
+
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+
+    #
+
+    location ~ \.php$ {
+
+        root           /var/www/wordpress;
+
+        fastcgi_pass   $ip_address:9000;
+
+        fastcgi_index  index.php;
+
+        fastcgi_param  SCRIPT_FILENAME  ;
+
+        include        fastcgi_params;
+
+    }
+
+
+
+    # deny access to .htaccess files, if Apache's document root
+
+    # concurs with nginx's one
+
+    #
+
+    #location ~ /\.ht {
+
+    #    deny  all;
+
+    #}
+
+}
+EOF
+
+/usr/bin/nignx -t
+/etc/init.d/nignx restart
+/etc/init.d/php-fpm restart
+
+
