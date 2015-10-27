@@ -13,7 +13,6 @@ else
 	sudo -i
 
 fi
-apt-get update && apt-get ugrade
 # we need to check LEMP 
 
 /etc/init.d/nginx start
@@ -29,10 +28,13 @@ else
 	apt-get update && apt-get install nginx
 
 fi
-
+apt-get purge mysql-server-5.5
+apt-get autoremove
+apt-get autoclean
+apt-get update && apt-get upgrade
 # While installtion of mysql use redhat@123 as mysql_root password
 echo "While installation of mysql use redhat@123 as mysql root password"
-/etc/init.d/mysqld start
+/etc/init.d/mysql start
 
 if [ $? -eq 0 ]
 
@@ -81,10 +83,10 @@ mysql -u root -p -e "CREATE DATABASE example_db";
 #mysql -u root -p -e "GRANT ALL PRIVILEGES ON *.* TO 'sameer'";
 
 # Downloading WordPress
-
-wget  http://wordpress.org/latest.zip > /root/
+cd ~
+wget  http://wordpress.org/latest.zip
 apt-get install unzip
-unzip /root/wordpress-4.3.1.zip
+unzip latest.zip
 
 mkdir -p /var/www/html
 
