@@ -31,6 +31,7 @@ else
 fi
 
 # While installtion of mysql use redhat@123 as mysql_root password
+echo "While installation of mysql use redhat@123 as mysql root password"
 /etc/init.d/mysqld start
 
 if [ $? -eq 0 ]
@@ -41,7 +42,7 @@ then
 
 else
 
-	apt-get install mysql-server && mysql_install_db && mysql_secure_installation && /etc/init.d/mysqld restart
+	apt-get install mysql-server && mysql_install_db && mysql_secure_installation && /etc/init.d/mysql restart
 
 fi
 
