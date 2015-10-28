@@ -32,8 +32,9 @@ apt-get purge mysql-client-5.5
 apt-get purge mysql-server-5.5
 apt-get autoremove
 apt-get autoclean
+apt-get remove mysql-server
 apt-get update && apt-get upgrade
-echo " I know there is no need of if statement below cause mysql is not present, we can comment it also"
+echo " I know that, now there is no need of if statement below cause mysql is not present, we can comment it also"
 /etc/init.d/mysql start
 
 if [ $? -eq 0 ]
