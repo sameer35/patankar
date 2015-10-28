@@ -49,7 +49,9 @@ else
 
 fi
 
+echo " wait for 10 sec,If php-fpm isn't install we have to enable Universe Open Source Software,2nd option after runnging software-properties-gtk"; sleep 10;
 /etc/init.d/php-fpm start
+
 
 if [ $? -eq 0 ]
 
@@ -59,7 +61,7 @@ then
 
 else 
 
-	apt-get install php-fpm php5-mysql
+	software-properties-gtk && apt-get update && apt-get install php-fpm php5-mysql
 
 fi
 
