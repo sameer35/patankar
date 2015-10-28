@@ -65,7 +65,7 @@ fi
 
 #  Enter Domain Name
 
-echo " Enter Domain Name "
+echo " Enter Domain Name as localhost "
 
 read domain_name
 
