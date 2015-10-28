@@ -150,4 +150,4 @@ EOF
 ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled
 bash /etc/nginx/sites-available/default -t
 /etc/init.d/nginx restart
-/etc/init.d/php5-fpm restart
+/etc/init.d/php-fpm restart
